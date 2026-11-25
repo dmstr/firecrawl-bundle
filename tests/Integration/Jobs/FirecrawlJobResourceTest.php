@@ -20,8 +20,9 @@ use PHPUnit\Framework\Attributes\Group;
  * scrape), scan (job, idempotence, partial
  * and total failure), the connection filter and read access for ROLE_USER.
  * Needs the PostgreSQL database from `DATABASE_URL`; the test firewall
- * authenticates as admin. Assumes that the database holds no active
- * firecrawl connection besides the ones created here (it is not seeded).
+ * authenticates as admin. Each test starts from empty tables
+ * ({@see JobsDatabaseTrait::cleanUp()}), so only the connections created
+ * here exist.
  * Role checks (401/403) are {@see \Dmstr\Firecrawl\Tests\Integration\Access\FirecrawlAccessTest};
  * the import into documents belongs to the host application's port.
  */

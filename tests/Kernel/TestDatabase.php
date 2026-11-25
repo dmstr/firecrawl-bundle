@@ -6,6 +6,7 @@ declare(strict_types=1);
 
 namespace Dmstr\Firecrawl\Tests\Kernel;
 
+use Doctrine\DBAL\Connection;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
@@ -18,6 +19,10 @@ use Symfony\Component\HttpKernel\KernelInterface;
  * bundle's own `Dmstr\Firecrawl\Migrations\*`, once per PHPUnit process.
  * Already executed migrations are skipped, so a database that is reused
  * between runs stays valid.
+ *
+ * {@see self::purge()} empties the tables the bundle's tests write, for
+ * tests that depend on the set of all connections (the implicit connection
+ * choice), whatever earlier tests left behind.
  */
 final class TestDatabase
 {
@@ -31,6 +36,19 @@ final class TestDatabase
 
         self::run($kernel);
         self::$migrated = true;
+    }
+
+    /**
+     * Deletes every row of the tables the tests write: crawl profiles, queue
+     * jobs and connections (their job reference rows cascade). The schema
+     * and the migrations metadata stay.
+     */
+    public static function purge(Connection $connection): void
+    {
+        $connection->executeStatement('DELETE FROM firecrawl_crawl_profile');
+        $connection->executeStatement('DELETE FROM dmstr_job');
+        $connection->executeStatement('DELETE FROM ref_firecrawl_job');
+        $connection->executeStatement('DELETE FROM dmstr_api_configuration');
     }
 
     /**
