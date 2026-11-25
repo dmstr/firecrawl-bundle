@@ -17,8 +17,10 @@ use Doctrine\ORM\EntityManagerInterface;
  * Fixtures of the database-backed pass-through tests (ApiTestCase). Needs
  * the PostgreSQL database from `DATABASE_URL`, migrated on first use
  * ({@see TestDatabase}). Connections are created directly
- * through the entity manager with the name prefix `test-firecrawl-pt-`;
- * cleanUp() removes them before and after each test.
+ * through the entity manager with the name prefix `test-firecrawl-pt-`.
+ * The tests of the implicit connection choice depend on all connections,
+ * so cleanUp() empties the tables before and after each test
+ * ({@see TestDatabase::purge()}), whatever other tests left behind.
  */
 trait PassthruDatabaseTrait
 {
@@ -38,7 +40,7 @@ trait PassthruDatabaseTrait
 
     public static function cleanUp(): void
     {
-        self::dbal()->executeStatement('DELETE FROM dmstr_api_configuration WHERE name LIKE :prefix', ['prefix' => self::PREFIX.'%']);
+        TestDatabase::purge(self::dbal());
         static::ensureKernelShutdown();
     }
 

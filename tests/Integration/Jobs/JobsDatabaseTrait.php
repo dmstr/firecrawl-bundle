@@ -19,11 +19,12 @@ use Doctrine\ORM\EntityManagerInterface;
 /**
  * Fixtures of the database-backed job reference tests (ApiTestCase). Needs
  * the PostgreSQL database from `DATABASE_URL`, migrated on first use
- * ({@see TestDatabase}). Connections are
- * created directly through the entity manager with the name prefix
- * `test-firecrawl-jobs-`; cleanUp() removes them (their job reference rows
- * cascade) and every queue job of type `firecrawl_job_scan` and
- * `firecrawl_job_import`.
+ * ({@see TestDatabase}). Connections are created directly through the
+ * entity manager with the name prefix `test-firecrawl-jobs-`. The implicit
+ * connection choice and the scan of all connections depend on every
+ * connection in the database, so cleanUp() empties the tables before and
+ * after each test ({@see TestDatabase::purge()}), whatever other tests left
+ * behind.
  */
 trait JobsDatabaseTrait
 {
@@ -44,9 +45,7 @@ trait JobsDatabaseTrait
 
     public static function cleanUp(): void
     {
-        $connection = self::dbal();
-        $connection->executeStatement('DELETE FROM dmstr_job WHERE type IN (?, ?)', [FirecrawlJob::JOB_TYPE_SCAN, FirecrawlJob::JOB_TYPE_IMPORT]);
-        $connection->executeStatement('DELETE FROM dmstr_api_configuration WHERE name LIKE :prefix', ['prefix' => self::PREFIX.'%']);
+        TestDatabase::purge(self::dbal());
         static::ensureKernelShutdown();
     }
 
@@ -118,7 +117,14 @@ trait JobsDatabaseTrait
             ['id' => (string) $connection->getId()],
         );
 
-        return array_column($rows, null, 'firecrawl_id');
+        // Rows without a remote id (scrapes) are keyed by '' (a null key
+        // is deprecated).
+        $keyed = [];
+        foreach ($rows as $row) {
+            $keyed[(string) $row['firecrawl_id']] = $row;
+        }
+
+        return $keyed;
     }
 
     /**

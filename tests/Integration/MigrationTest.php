@@ -24,7 +24,7 @@ use Symfony\Component\Console\Tester\CommandTester;
  *
  * Every test starts from an empty database: it drops and recreates the
  * current schema, so all rows of other tests are gone, and it leaves the
- * database fully migrated for the tests that run after it. The migrations
+ * database fully migrated and empty for the tests that run after it. The migrations
  * run through `doctrine:migrations:migrate` in a fresh kernel each time,
  * because the migrations metadata storage remembers within one container
  * that its table exists. Needs the PostgreSQL database from `DATABASE_URL`.
@@ -75,6 +75,19 @@ final class MigrationTest extends KernelTestCase
     protected function setUp(): void
     {
         self::resetDatabase();
+    }
+
+    /**
+     * Leaves the database migrated and without the rows written here, so the
+     * tests that run afterwards see the same state as after
+     * {@see TestDatabase::migrate()}.
+     */
+    protected function tearDown(): void
+    {
+        $this->migrate();
+        TestDatabase::purge(self::dbal());
+        static::ensureKernelShutdown();
+        parent::tearDown();
     }
 
     public function testAnEmptyDatabaseGetsTheWholeSchema(): void
@@ -252,7 +265,8 @@ final class MigrationTest extends KernelTestCase
     /**
      * Structure of the table from the PostgreSQL catalog: columns in their
      * order with type, length, precision, nullability, default and comment,
-     * index definitions and constraint definitions by name.
+     * index definitions and constraint definitions by name (without the NOT NULL
+ * constraints of PostgreSQL 18).
      *
      * @return array{columns: list<array<string, mixed>>, indexes: array<string, string>, constraints: array<string, string>}
      */
@@ -274,7 +288,11 @@ final class MigrationTest extends KernelTestCase
                 [self::TABLE],
             ),
             'constraints' => $dbal->fetchAllKeyValue(
-                'SELECT conname, pg_get_constraintdef(oid) FROM pg_constraint WHERE conrelid = to_regclass(?) ORDER BY conname',
+                // Primary key, foreign, unique, check and exclusion
+                // constraints only: PostgreSQL 18 also records NOT NULL as a
+                // constraint (contype `n`), older versions do not;
+                // nullability is part of the columns above.
+                "SELECT conname, pg_get_constraintdef(oid) FROM pg_constraint WHERE conrelid = to_regclass(?) AND contype IN ('p', 'f', 'u', 'c', 'x') ORDER BY conname",
                 [self::TABLE],
             ),
         ];
