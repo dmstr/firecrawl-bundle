@@ -1,0 +1,96 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Discover",
+  "description": "Finding the pages and files by following links from the seeds.",
+  "type": "object",
+  "required": [
+    "seeds"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "seeds": {
+      "type": "array",
+      "title": "Seeds",
+      "description": "Start URLs; one breadth-first walk per seed.",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "format": "uri",
+        "pattern": "^https?://"
+      },
+      "x-format": "table",
+      "x-sortable": true,
+      "x-arrayMove": false
+    },
+    "allowedDomains": {
+      "type": "string",
+      "title": "Allowed domains",
+      "description": "Comma separated. Hosts in scope, subdomains included. Empty: every linked host. Required with a login, so the session cookie is sent to the site only."
+    },
+    "excludedDomains": {
+      "type": "string",
+      "title": "Excluded domains",
+      "description": "Comma separated."
+    },
+    "excludedUrlPatterns": {
+      "type": "array",
+      "title": "Excluded URL patterns",
+      "description": "Substring, or a glob against the whole URL when it contains * or ?. Must contain the logout URL, otherwise the crawler ends its own session.",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "x-format": "table",
+      "x-sortable": true,
+      "x-arrayMove": false
+    },
+    "maxDepth": {
+      "type": "integer",
+      "title": "Max depth",
+      "minimum": 0,
+      "maximum": 50,
+      "default": 3
+    },
+    "limit": {
+      "type": "integer",
+      "title": "Limit",
+      "description": "Safety cap of pages per seed.",
+      "minimum": 1,
+      "maximum": 100000,
+      "default": 100
+    },
+    "fileExtensions": {
+      "type": "array",
+      "title": "File extensions",
+      "description": "Links with these extensions are listed as files, not scraped as pages.",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "pdf",
+          "doc",
+          "docx",
+          "xls",
+          "xlsx",
+          "ppt",
+          "pptx",
+          "rtf",
+          "odt",
+          "ods",
+          "csv"
+        ]
+      },
+      "x-format": "checkboxes-inline"
+    },
+    "downloadHints": {
+      "type": "string",
+      "title": "Download hints",
+      "description": "Comma separated path substrings that mark a link as a download although its URL has no extension."
+    },
+    "fileDomains": {
+      "type": "string",
+      "title": "File domains",
+      "description": "Comma separated hosts that may serve the files besides the allowed domains, e.g. a CDN or image proxy. The session cookie is never sent to them."
+    }
+  }
+}

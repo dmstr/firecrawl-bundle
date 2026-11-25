@@ -1,0 +1,59 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Firecrawl",
+  "description": "Connection to a self-hosted Firecrawl instance (REST API v2) for scraping, mapping and crawling web pages.",
+  "type": "object",
+  "required": ["firecrawl", "type", "endpoint_type", "base_url"],
+  "properties": {
+    "firecrawl": {
+      "type": "boolean",
+      "const": true,
+      "default": true,
+      "readOnly": true,
+      "description": "Identifier flag of the firecrawl connection type"
+    },
+    "type": {
+      "type": "string",
+      "const": "firecrawl",
+      "default": "firecrawl",
+      "readOnly": true,
+      "description": "Connection type"
+    },
+    "endpoint_type": {
+      "type": "string",
+      "const": "rest",
+      "default": "rest",
+      "readOnly": true,
+      "description": "Endpoint type"
+    },
+    "base_url": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^https?://",
+      "title": "Base URL",
+      "description": "Base URL of the Firecrawl instance; the client appends /v2/..."
+    },
+    "api_key": {
+      "type": "string",
+      "minLength": 1,
+      "writeOnly": true,
+      "title": "API key",
+      "description": "API key of the instance; stored encrypted and returned masked as \"********\" (send the mask or omit the key to keep the stored value). The 'Authorization: Bearer' header is only sent when it is set"
+    },
+    "timeout": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 55,
+      "default": 30,
+      "title": "Timeout (seconds)",
+      "description": "HTTP timeout per request; defaults to 30 seconds. Capped at 55 seconds so that synchronous scrape and map requests end before a PHP request timeout of 60 seconds"
+    },
+    "verify_ssl": {
+      "type": "boolean",
+      "default": true,
+      "title": "Verify TLS certificate",
+      "description": "Verify the TLS certificate and host name of the instance; defaults to true"
+    }
+  },
+  "additionalProperties": false
+}

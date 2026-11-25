@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Import a Firecrawl result",
+  "description": "Imports the result of a completed crawl or batch scrape into a knowledge collection, one document per page; new pages are created, changed pages replaced, unchanged pages skipped.",
+  "type": "object",
+  "properties": {
+    "collection": {
+      "type": "string",
+      "minLength": 1,
+      "title": "Knowledge collection",
+      "description": "IRI of the target knowledge collection; its UUID or its name is accepted as well. The collection must not hold crawler-ingested chunks.",
+      "x-collection": "/api/admin/collections",
+      "x-label-property": "name"
+    },
+    "deleteVanished": {
+      "type": "boolean",
+      "default": false,
+      "title": "Remove vanished pages",
+      "description": "Crawls only: remove the documents of the same site imported from Firecrawl earlier whose page is no longer in this crawl. Runs only after a complete import without failed pages; uploaded documents and documents of other sites are never removed."
+    }
+  },
+  "required": ["collection"],
+  "additionalProperties": false
+}

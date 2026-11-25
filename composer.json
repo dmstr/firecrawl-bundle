@@ -1,0 +1,78 @@
+{
+    "name": "dmstr/firecrawl-bundle",
+    "description": "Symfony bundle for self-hosted Firecrawl v2: a `firecrawl` connection type of dmstr/api-configuration-bundle with health probe, a REST client behind an interface with a scriptable test fake, synchronous pass-through resources, a job reference table with background scan and import, crawl profiles with login and file conversion, crawl onboarding MCP tools and an idempotent connection seed command.",
+    "type": "symfony-bundle",
+    "license": "MIT",
+    "keywords": [
+        "firecrawl",
+        "symfony",
+        "bundle",
+        "scraping",
+        "crawler",
+        "api-platform"
+    ],
+    "authors": [
+        {
+            "name": "diemeisterei GmbH",
+            "homepage": "https://diemeisterei.de"
+        }
+    ],
+    "require": {
+        "php": ">=8.5",
+        "ext-dom": "*",
+        "ext-mbstring": "*",
+        "api-platform/core": "^4.4.8",
+        "dmstr/api-configuration-bundle": "^0.7",
+        "dmstr/api-platform-utils-bundle": "^0.6",
+        "dmstr/openapi-json-schema-bundle": "^0.5",
+        "dmstr/symfony-job-queue-bundle": "^0.6",
+        "doctrine/dbal": "^3.8",
+        "doctrine/doctrine-bundle": "^2.14",
+        "doctrine/doctrine-migrations-bundle": "^3.4",
+        "doctrine/migrations": "^3.9",
+        "doctrine/orm": "^3.3",
+        "opis/json-schema": "^2.6",
+        "psr/cache": "^2.0 || ^3.0",
+        "psr/log": "^1.0 || ^2.0 || ^3.0",
+        "symfony/config": "^7.4",
+        "symfony/console": "^7.4",
+        "symfony/css-selector": "^7.4",
+        "symfony/dependency-injection": "^7.4",
+        "symfony/doctrine-bridge": "^7.4",
+        "symfony/dom-crawler": "^7.4",
+        "symfony/framework-bundle": "^7.4",
+        "symfony/http-client": "^7.4",
+        "symfony/http-client-contracts": "^3.5",
+        "symfony/http-foundation": "^7.4",
+        "symfony/http-kernel": "^7.4",
+        "symfony/messenger": "^7.4",
+        "symfony/monolog-bundle": "^3.10",
+        "symfony/security-bundle": "^7.4",
+        "symfony/security-core": "^7.4",
+        "symfony/serializer": "^7.4",
+        "symfony/uid": "^7.4",
+        "symfony/validator": "^7.4",
+        "symfony/yaml": "^7.4"
+    },
+    "require-dev": {
+        "ext-pdo_pgsql": "*",
+        "phpunit/phpunit": "^12.0 || ^13.0",
+        "symfony/browser-kit": "^7.4"
+    },
+    "suggest": {
+        "dmstr/mcp-endpoint-bundle": "Serves the crawl onboarding MCP tools (API Platform `McpTool` operations) at `/mcp/<slug>` with a tool allowlist and a required permission."
+    },
+    "autoload": {
+        "psr-4": {
+            "Dmstr\\Firecrawl\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Dmstr\\Firecrawl\\Tests\\": "tests/"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    }
+}

@@ -1,0 +1,48 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Import",
+  "description": "Where the Markdown files of the latest crawl go: the knowledge collection and the chunk sizes of its documents.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["collection", "chunkTargetSize", "chunkOverlap", "chunkMinSize"],
+  "properties": {
+    "collection": {
+      "type": "string",
+      "title": "Collection",
+      "description": "The knowledge collection the documents go into (IRI).",
+      "format": "iri-reference",
+      "x-collection": "/api/admin/collections",
+      "x-label-property": "name",
+      "x-search-property": "name"
+    },
+    "chunkTargetSize": {
+      "type": "integer",
+      "title": "Chunk target size",
+      "description": "Characters per chunk. Smaller chunks suit short pages: a price or a contact gets its own chunk.",
+      "minimum": 1,
+      "default": 1500
+    },
+    "chunkOverlap": {
+      "type": "integer",
+      "title": "Chunk overlap",
+      "description": "Characters a chunk repeats from the one before; less than the target size.",
+      "minimum": 0,
+      "default": 200
+    },
+    "chunkMinSize": {
+      "type": "integer",
+      "title": "Chunk minimum size",
+      "description": "A shorter rest is merged into the chunk before.",
+      "minimum": 0,
+      "default": 300
+    },
+    "deleteVanished": {
+      "type": "boolean",
+      "title": "Remove vanished pages",
+      "description": "Remove the documents of pages the latest crawl no longer has. Skipped when a page failed.",
+      "default": true,
+      "x-format": "radios-inline",
+      "x-enumTitles": ["No", "Yes"]
+    }
+  }
+}

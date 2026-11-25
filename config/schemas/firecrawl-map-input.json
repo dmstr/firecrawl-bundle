@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Firecrawl map",
+  "description": "Lists the URLs of a site synchronously (POST /v2/map). The body is forwarded to Firecrawl unchanged, including options this schema does not list; only apiConfiguration is consumed by the app and not forwarded.",
+  "type": "object",
+  "required": [
+    "url"
+  ],
+  "properties": {
+    "url": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^https?://",
+      "title": "URL",
+      "description": "Absolute http(s) URL of the site to map."
+    },
+    "search": {
+      "type": "string",
+      "title": "Search",
+      "description": "Orders the links by relevance to this search term."
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "title": "Limit",
+      "description": "Maximum number of links to return."
+    },
+    "sitemap": {
+      "type": "string",
+      "enum": [
+        "skip",
+        "include",
+        "only"
+      ],
+      "title": "Sitemap",
+      "description": "Use of the sitemap: skip it, include it (Firecrawl default) or use only the sitemap."
+    },
+    "apiConfiguration": {
+      "type": "string",
+      "format": "iri-reference",
+      "minLength": 1,
+      "title": "Firecrawl connection",
+      "description": "IRI of an active firecrawl connection; its UUID or its name (without spaces) is accepted as well. Omit when exactly one active firecrawl connection exists. The query parameter apiConfiguration wins over this field. Consumed by the app and not forwarded to Firecrawl.",
+      "x-collection": "/api/admin/api_configurations?type=firecrawl&active=true",
+      "x-label-property": "name"
+    }
+  },
+  "additionalProperties": true
+}

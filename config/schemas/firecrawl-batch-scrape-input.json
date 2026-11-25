@@ -1,0 +1,58 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Firecrawl batch scrape",
+  "description": "Starts a batch scrape of several pages on the Firecrawl instance (POST /v2/batch/scrape); the answer carries the batch id and its status URL. Nothing is stored by the app. The body is forwarded to Firecrawl unchanged, including options this schema does not list; only apiConfiguration is consumed by the app and not forwarded.",
+  "type": "object",
+  "required": [
+    "urls"
+  ],
+  "properties": {
+    "urls": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "format": "uri",
+        "pattern": "^https?://"
+      },
+      "title": "URLs",
+      "description": "Absolute http(s) URLs of the pages to scrape."
+    },
+    "formats": {
+      "type": "array",
+      "title": "Formats",
+      "description": "Output formats, e.g. markdown, html, rawHtml, links, screenshot, summary, or a format object such as {\"type\": \"json\", \"schema\": {...}}. Firecrawl default: [\"markdown\"].",
+      "items": {
+        "anyOf": [
+          {
+            "type": "string",
+            "minLength": 1
+          },
+          {
+            "type": "object"
+          }
+        ]
+      }
+    },
+    "onlyMainContent": {
+      "type": "boolean",
+      "title": "Only main content",
+      "description": "Return only the main content of the page, without headers, navigation and footers. Firecrawl default: true."
+    },
+    "ignoreInvalidURLs": {
+      "type": "boolean",
+      "title": "Ignore invalid URLs",
+      "description": "Skip invalid URLs instead of failing the whole batch; Firecrawl lists them as invalidURLs in its answer."
+    },
+    "apiConfiguration": {
+      "type": "string",
+      "format": "iri-reference",
+      "minLength": 1,
+      "title": "Firecrawl connection",
+      "description": "IRI of an active firecrawl connection; its UUID or its name (without spaces) is accepted as well. Omit when exactly one active firecrawl connection exists. The query parameter apiConfiguration wins over this field. Consumed by the app and not forwarded to Firecrawl.",
+      "x-collection": "/api/admin/api_configurations?type=firecrawl&active=true",
+      "x-label-property": "name"
+    }
+  },
+  "additionalProperties": true
+}

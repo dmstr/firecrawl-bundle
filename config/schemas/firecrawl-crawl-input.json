@@ -1,0 +1,70 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Firecrawl crawl",
+  "description": "Starts a crawl on the Firecrawl instance (POST /v2/crawl); the answer carries the crawl id and its status URL. Nothing is stored by the app. The body is forwarded to Firecrawl unchanged, including options this schema does not list; only apiConfiguration is consumed by the app and not forwarded.",
+  "type": "object",
+  "required": [
+    "url"
+  ],
+  "properties": {
+    "url": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^https?://",
+      "title": "URL",
+      "description": "Absolute http(s) start URL of the crawl."
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "title": "Limit",
+      "description": "Maximum number of pages to crawl."
+    },
+    "maxDiscoveryDepth": {
+      "type": "integer",
+      "minimum": 0,
+      "title": "Maximum discovery depth",
+      "description": "Maximum link depth from the start URL."
+    },
+    "includePaths": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "Include paths",
+      "description": "Regular expressions; only URL paths matching one of them are crawled."
+    },
+    "excludePaths": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "Exclude paths",
+      "description": "Regular expressions; URL paths matching one of them are skipped."
+    },
+    "scrapeOptions": {
+      "type": "object",
+      "title": "Scrape options",
+      "description": "Options applied to every crawled page, as for a scrape (formats, onlyMainContent, waitFor, ...)."
+    },
+    "sitemap": {
+      "type": "string",
+      "enum": [
+        "skip",
+        "include"
+      ],
+      "title": "Sitemap",
+      "description": "Use the sitemap for discovery (include, Firecrawl default) or skip it."
+    },
+    "apiConfiguration": {
+      "type": "string",
+      "format": "iri-reference",
+      "minLength": 1,
+      "title": "Firecrawl connection",
+      "description": "IRI of an active firecrawl connection; its UUID or its name (without spaces) is accepted as well. Omit when exactly one active firecrawl connection exists. The query parameter apiConfiguration wins over this field. Consumed by the app and not forwarded to Firecrawl.",
+      "x-collection": "/api/admin/api_configurations?type=firecrawl&active=true",
+      "x-label-property": "name"
+    }
+  },
+  "additionalProperties": true
+}

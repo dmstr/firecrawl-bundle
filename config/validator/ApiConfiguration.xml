@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- file generated with AI assistance: Claude Code - 2026-10-02 23:51:30 UTC -->
+<!--
+    Validation rules the firecrawl-bundle adds to the vendor entity of
+    dmstr/api-configuration-bundle. Prepended to framework.validation.mapping.paths
+    by FirecrawlBundle::prependExtension().
+-->
+<constraint-mapping xmlns="http://symfony.com/schema/dic/constraint-mapping"
+                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xsi:schemaLocation="http://symfony.com/schema/dic/constraint-mapping https://symfony.com/schema/dic/constraint-mapping/constraint-mapping-1.0.xsd">
+    <class name="Dmstr\ApiConfiguration\Entity\ApiConfiguration">
+        <!-- Names of firecrawl connections are unique among firecrawl connections. -->
+        <constraint name="Dmstr\Firecrawl\Validator\FirecrawlConnectionNameUnique"/>
+    </class>
+</constraint-mapping>

@@ -1,0 +1,51 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "File converter",
+  "description": "Connection to the file converter service that turns document files (pdf, docx, xlsx, csv, ...) into Markdown for the crawl.",
+  "type": "object",
+  "required": [
+    "file-converter",
+    "type",
+    "endpoint_type",
+    "base_url"
+  ],
+  "properties": {
+    "file-converter": {
+      "type": "boolean",
+      "const": true,
+      "default": true,
+      "readOnly": true,
+      "description": "Identifier flag of the file-converter connection type"
+    },
+    "type": {
+      "type": "string",
+      "const": "file-converter",
+      "default": "file-converter",
+      "readOnly": true,
+      "description": "Connection type"
+    },
+    "endpoint_type": {
+      "type": "string",
+      "const": "rest",
+      "default": "rest",
+      "readOnly": true,
+      "description": "Endpoint type"
+    },
+    "base_url": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^https?://",
+      "title": "Base URL",
+      "description": "Base URL of the file converter service, e.g. http://converter:8000; the client appends /convert and /health"
+    },
+    "timeout": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 3600,
+      "default": 300,
+      "title": "Timeout (seconds)",
+      "description": "HTTP timeout per file; defaults to 300 seconds. Large PDFs take minutes"
+    }
+  },
+  "additionalProperties": false
+}

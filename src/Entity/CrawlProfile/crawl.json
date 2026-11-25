@@ -1,0 +1,110 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Crawl",
+  "description": "What happens to the pages and files: page elements removed before the Markdown is made (Firecrawl excludeTags), and whether the document files are converted by the file converter connection.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "excludedTags": {
+      "type": "string",
+      "title": "Excluded tags",
+      "description": "Comma separated tag names, e.g. nav, form, footer, aside."
+    },
+    "excludedSelector": {
+      "type": "string",
+      "title": "Excluded selectors",
+      "description": "Comma separated CSS selectors, e.g. .cookie-banner, #footer-modal."
+    },
+    "waitFor": {
+      "type": "integer",
+      "title": "Wait before scraping (ms)",
+      "description": "Optional. Milliseconds Firecrawl waits after the page loaded, for content that scripts or web components load later. Slows every page.",
+      "minimum": 0,
+      "maximum": 60000
+    },
+    "convertFiles": {
+      "type": "boolean",
+      "title": "Convert files",
+      "default": false,
+      "description": "Download the files that discover lists and convert them to Markdown.",
+      "x-format": "radios-inline",
+      "x-enumTitles": [
+        "No",
+        "Yes"
+      ]
+    },
+    "maxFileBytes": {
+      "type": "integer",
+      "title": "Max bytes per file",
+      "minimum": 1,
+      "default": 20971520
+    },
+    "pdfPageMarkers": {
+      "type": "boolean",
+      "title": "PDF page markers",
+      "description": "A <!--page:N--> line before each PDF page, so sources can link to the page.",
+      "default": true,
+      "x-format": "radios-inline",
+      "x-enumTitles": [
+        "No",
+        "Yes"
+      ]
+    },
+    "ocr": {
+      "type": "boolean",
+      "title": "OCR scanned PDFs",
+      "description": "Pages of a PDF without a text layer (scans) are read by OCR. About 5 seconds per scanned page.",
+      "default": false,
+      "x-format": "radios-inline",
+      "x-enumTitles": [
+        "No",
+        "Yes"
+      ]
+    },
+    "converters": {
+      "type": "array",
+      "title": "Conversion tool per extension",
+      "x-format": "table-object",
+      "description": "Optional. Default markitdown, csv: pandas, xlsx: xlsx-formulas.",
+      "items": {
+        "type": "object",
+        "title": "Tool",
+        "additionalProperties": false,
+        "required": [
+          "extension",
+          "converter"
+        ],
+        "properties": {
+          "extension": {
+            "type": "string",
+            "title": "Extension",
+            "enum": [
+              "pdf",
+              "doc",
+              "docx",
+              "xls",
+              "xlsx",
+              "ppt",
+              "pptx",
+              "rtf",
+              "odt",
+              "ods",
+              "csv"
+            ]
+          },
+          "converter": {
+            "type": "string",
+            "title": "Tool",
+            "enum": [
+              "markitdown",
+              "pandas",
+              "xlsx-formulas"
+            ]
+          }
+        }
+      },
+      "x-sortable": true,
+      "x-arrayMove": false
+    }
+  }
+}

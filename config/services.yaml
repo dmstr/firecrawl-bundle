@@ -1,0 +1,80 @@
+# file generated with AI assistance: Claude Code - 2026-10-02 23:51:30 UTC
+# Services of dmstr/firecrawl-bundle, imported by FirecrawlBundle::loadExtension().
+# The host application's _instanceof rules do not reach services defined here, so the
+# tags the bundle relies on are declared in this file.
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        bind:
+            # Monolog channel `firecrawl` (prepended by the bundle).
+            $firecrawlLogger: '@monolog.logger.firecrawl'
+
+    _instanceof:
+        # Schema branches of ApiConfiguration.configJson (FirecrawlExtension).
+        Dmstr\OpenApiJsonSchema\Interface\SchemaProviderInterface:
+            tags: ['dmstr_openapi_json_schema.provider']
+        # Connection types of dmstr/api-configuration-bundle (FirecrawlExtension).
+        Dmstr\ApiConfiguration\Extension\ApiExtensionInterface:
+            tags: ['dmstr_api_configuration.extension']
+        # Job processors of dmstr/symfony-job-queue-bundle.
+        Dmstr\SymfonyJobQueue\Service\Job\JobProcessorInterface:
+            tags: ['dmstr.job_queue.processor']
+
+    Dmstr\Firecrawl\:
+        resource: '../src/'
+        exclude:
+            - '../src/FirecrawlBundle.php'
+            - '../src/Entity/'
+            - '../src/ApiResource/'
+            # Value objects and per-connection objects, created with `new`.
+            - '../src/Client/FirecrawlClient.php'
+            - '../src/Client/FirecrawlApiException.php'
+            - '../src/Client/FirecrawlProtocolException.php'
+            - '../src/Connection/FirecrawlHealthClient.php'
+            - '../src/Connection/FileConverterHealthClient.php'
+            - '../src/Crawl/CrawlProfile.php'
+            - '../src/Crawl/UrlClassifier.php'
+            # Test seam: registered by the host application under when@test only.
+            - '../src/Testing/'
+            - '../src/Migrations/'
+
+    # Client seam: everything obtains Firecrawl clients here; under when@test
+    # the host application aliases the interface to Testing\FakeFirecrawlClientFactory.
+    Dmstr\Firecrawl\Client\FirecrawlClientFactoryInterface:
+        alias: Dmstr\Firecrawl\Client\FirecrawlClientFactory
+
+    # Idempotent seed of firecrawl connections.
+    Dmstr\Firecrawl\Command\ConnectionSeedCommand:
+        arguments:
+            $defaultBaseUrl: '%dmstr_firecrawl.seed.base_url%'
+            $defaultApiKey: '%dmstr_firecrawl.seed.api_key%'
+
+    # Input schemas of the bundle's own operations. The host application's
+    # resolver only searches its own src/Entity; this instance joins the resolver chain,
+    # so the OpenAPI requestBody and InputBodyValidator use the same file:
+    #   config/schemas/<operation-with-dashes>-input.json   (Doctrine-less resources)
+    #   src/Entity/**/<Entity>/<verb>.input.json            (entities)
+    dmstr_firecrawl.input_schema_resolver:
+        class: Dmstr\OpenApiJsonSchema\Service\OperationInputSchemaResolver
+        arguments:
+            $schemaBasePaths: ['%dmstr_firecrawl.dir%/config/schemas']
+            $entityResolutionRoots: [['%dmstr_firecrawl.dir%/src/Entity', 'Dmstr\Firecrawl\Entity']]
+        tags:
+            - { name: 'dmstr_openapi_json_schema.input_resolver', priority: 10 }
+
+    # Boilerplate form of a sample job, by job id (crawl onboarding).
+    Dmstr\Firecrawl\Onboarding\FormStore:
+        arguments:
+            $cache: '@cache.app'
+
+    # Announces the permissions this bundle checks to the permission voter of
+    # the host application (container tag, plain strings; the application maps
+    # them to roles).
+    Dmstr\Firecrawl\Security\FirecrawlPermissions:
+        tags:
+            - { name: za7_core.permission, permission: !php/const Dmstr\Firecrawl\Security\FirecrawlPermissions::PASSTHRU_EXECUTE }
+            - { name: za7_core.permission, permission: !php/const Dmstr\Firecrawl\Security\FirecrawlPermissions::JOB_READ }
+            - { name: za7_core.permission, permission: !php/const Dmstr\Firecrawl\Security\FirecrawlPermissions::JOB_WRITE }
+            - { name: za7_core.permission, permission: !php/const Dmstr\Firecrawl\Security\FirecrawlPermissions::ONBOARDING_USE }
+            - { name: za7_core.permission, permission: !php/const Dmstr\Firecrawl\Security\FirecrawlPermissions::PROFILE_MANAGE }
